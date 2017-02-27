@@ -78,9 +78,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         super.onPause();
 
-        if (this.mSensorManager != null) {
-            this.mSensorManager.unregisterListener(this);
-
+        if (this.mProximitySensor != null) {
+            this.mSensorManager.unregisterListener(this, this.mProximitySensor);
         }
     }
 }
