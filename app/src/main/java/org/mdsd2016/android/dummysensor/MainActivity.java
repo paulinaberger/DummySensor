@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mProximitySensor;
     private Sensor mAccelerometerSensor;
     private RelativeLayout mMainRelativeLayout;
+    private long moldTimeStamp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //need to subscribe in onResume
         Log.d(MainActivity.TAG_MAIN_ACTIVITY, "Range: " + this.mAccelerometerSensor.getMaximumRange()
                 + ",Resolution:" + this.mAccelerometerSensor.getResolution());
+
+        this.moldTimeStamp = System.currentTimeMillis();
 
 
     }
@@ -103,9 +106,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         float zAcc = event.values[2];
 
         double magnitude = (xAcc * xAcc + yAcc * yAcc + zAcc * zAcc)/(SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+         long currentTimeStamp = event.timestamp;
 
-        if(magnitude > 5.0) {
+
+        if(magnitude > 5.0 && (currentTimeStamp  - this.moldTimeStamp) > 1000000000) { //timestamp has to be big enough and higher than
+            //whichever number, if conditions are fulfilled, then the timestamp is updated
             Log.d(MainActivity.TAG_MAIN_ACTIVITY, "Suffle!! Value:" + magnitude);
+            this.moldTimeStamp = currentTimeStamp;
             //getbackground color wants an integer. The R class takes it into longs. Not into integers. So
             //we have to place getcolor *system color* but then error will need to require API level 23, and min. level is 16 SDK.
             //so because of that we have to use a Compat library. Needs 2 argues, first one has to be the context (i.e. MyACtivity)
@@ -113,14 +120,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             int currentColor = (((ColorDrawable) this.mMainRelativeLayout.getBackground()).getColor());
 
-            if (currentColor == R.color.cyan) {
+            if (currentColor == ContextCompat.getColor(this, R.color.cyan)) {
                 this.mMainRelativeLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.green));
             }else{
                 this.mMainRelativeLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan));
             }
-
         }
-
     }
 
     @Override
