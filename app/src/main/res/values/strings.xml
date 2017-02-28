@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DummySensor</string>
+    <string name="tv_shuffle_message_text">shuffle the device!!</string>
 </resources>
