@@ -1,13 +1,16 @@
 package org.mdsd2016.android.dummysensor;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.List;
@@ -19,11 +22,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager mSensorManager;
     private Sensor mProximitySensor;
     private Sensor mAccelerometerSensor;
+    private RelativeLayout mMainRelativeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.mMainRelativeLayout = (RelativeLayout) findViewById(R.id.relative_layout_activity_main); //calls the layout
 
         //after inflating layout - we call the getSystemService and use a constant, string. Refers to service.
         //element retunrs a sensor (has to be cast to be a sensor manager), same as notification manager, handles sensor events
@@ -100,6 +106,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if(magnitude > 5.0) {
             Log.d(MainActivity.TAG_MAIN_ACTIVITY, "Suffle!! Value:" + magnitude);
+            //getbackground color wants an integer. The R class takes it into longs. Not into integers. So
+            //we have to place getcolor *system color* but then error will need to require API level 23, and min. level is 16 SDK.
+            //so because of that we have to use a Compat library. Needs 2 argues, first one has to be the context (i.e. MyACtivity)
+            //used to make a reference to the resources attached to the activity.
+
+            int currentColor = (((ColorDrawable) this.mMainRelativeLayout.getBackground()).getColor());
+
+            if (currentColor == R.color.cyan) {
+                this.mMainRelativeLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.green));
+            }else{
+                this.mMainRelativeLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan));
+            }
+
         }
 
     }
